@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Committees - AyverdiMUN'26</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  color: #ddd;
+  background: #0f0f0f;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url('./IMG_7995.JPG') center/cover no-repeat;
+  filter: brightness(0.35);
+  z-index: -2;
+  transform: scale(1);
+  animation: bgZoom 40s ease-in-out infinite alternate;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,15,0.6);
+  z-index: -1;
+}
+@keyframes bgZoom {
+  0% { transform: scale(1); filter: brightness(0.35); }
+  100% { transform: scale(1.08); filter: brightness(0.4); }
+}
+
+header {
+  position: fixed;
+  top: 0; left: 0; width: 100%;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 2rem;
+  background-color: rgba(17,17,17,0.95);
+  border-bottom: 1px solid #222;
+  z-index: 2000;
+  backdrop-filter: blur(8px);
+  animation: fadeDown 1s ease;
+}
+header .logo {
+  display: flex; align-items: center; gap: 0.75rem;
+  cursor: pointer;
+}
+header .logo img { width: 48px; height: 48px; }
+header .logo span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #c0a67a;
+}
+nav { display: flex; gap: 1rem; }
+nav a {
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0%;
+  height: 2px;
+  background-color: #c0a67a; 
+  transition: width 0.3s ease, opacity 0.3s ease;
+  opacity: 0.7;
+}
+nav a:hover::after {
+  width: 100%;
+  opacity: 1;
+}
+
+nav a:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+header {
+  animation: fadeDown 1s ease;
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 22px;
+  cursor: pointer;
+  z-index: 3000;
+}
+.hamburger div {
+  height: 3.5px;
+  border-radius: 2px;
+  background-color: #c0a67a;
+  transition: all 0.5s ease;
+}
+.hamburger.active div:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.hamburger.active div:nth-child(2) { opacity: 0; }
+.hamburger.active div:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+.page-title {
+  text-align: center;
+  margin-top: 140px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 3rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(192,166,122,0.4);
+}
+
+.committee-container {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem;
+  padding: 2rem; margin-top: 2rem;
+}
+.committee-box {
+  width: 200px; aspect-ratio: 1080/1350;
+  border-radius: 1.25rem; overflow: hidden;
+  position: relative; cursor: pointer;
+  background-size: cover; background-position: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.committee-box::before {
+  content: ""; position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35); transition: all 0.3s ease;
+}
+.committee-box:hover::before { background: rgba(0,0,0,0.55); }
+.committee-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.committee-box span {
+  position: absolute; bottom: 0; width: 100%;
+  text-align: center; background: rgba(0,0,0,0.45);
+  color: #fff; font-family: 'Poppins', sans-serif;
+  font-weight: 600; font-size: 1.1rem; padding: 0.5rem 0;
+}
+
+.overlay {
+  position: fixed; inset: 0; display: none;
+  justify-content: center; align-items: center;
+  background: rgba(0,0,0,0.7); z-index: 4000;
+}
+.overlay-content {
+  width: 90%; max-width: 850px;
+  background: rgba(20,20,20,0.9);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  padding: 2.5rem;
+  color: #ddd;
+  position: relative;
+  transform: translateY(20px) scale(0.9);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+.overlay.show .overlay-content {
+  transform: translateY(0) scale(1); opacity: 1;
+}
+.close-btn {
+  position: absolute; top: 1rem; right: 1rem;
+  font-size: 1.8rem; color: #c0a67a; cursor: pointer;
+  transition: color 0.3s;
+}
+.close-btn:hover { color: #fff; }
+.overlay-content h2 {
+  font-family: 'Poppins', sans-serif; font-size: 2rem; font-weight: 600;
+  margin-bottom: 0.5rem; color: #fff;
+}
+.overlay-content h3 {
+  font-family: 'Poppins', sans-serif; font-size: 1.3rem;
+  
+  color: #c0a67a; margin-bottom: 1rem; margin-top: 0.7rem;
+}
+.overlay-content h4 {
+  font-family: 'Poppins', sans-serif; font-size: 1.1rem;
+  
+  color: #c0a67a; margin-bottom: 0.4rem; margin-top: 0.4rem;
+}
+.overlay-content p { line-height: 1.6; font-size: 1rem; color: #ddd; margin-bottom: 0.6rem;}
+.overlay-content button {
+  margin-top: 1rem; padding: 0.6rem 1.2rem;
+  border: none; border-radius: 9999px;
+  background: #c0a67a; color: #111;
+  font-family: 'Poppins', sans-serif; font-weight: 600;
+  cursor: pointer; transition: all 0.3s ease;
+}
+.overlay-content button:hover { background: #fff9c0; transform: scale(1.05); }
+
+footer {
+  background: #0f0f0f;
+  padding: 4rem 1rem 2rem;
+  color: #ccc;
+  position: relative;
+  border-top: 1px solid #2a2a2a;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+footer.visible { opacity: 1; transform: translateY(0); }
+footer .footer-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex; flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2rem;
+  text-align: left;
+}
+footer h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+footer a {
+  color: #c0a67a;
+  display: block;
+  margin: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+footer a:hover { color: #fff; }
+footer p.copy {
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  nav {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    background-color: #111; flex-direction: column; align-items: center;
+    max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-20px);
+    transition: all 0.4s ease;
+  }
+  nav.show { max-height: 500px; opacity: 1; transform: translateY(0); }
+  nav a { padding: 1rem 0; font-size: 1.1rem; }
+
+  footer .footer-container { 
+    flex-direction: column; 
+    text-align: center; 
+    gap: 1.5rem; 
+  }
+  .page-title { font-size: 2.4rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img src="./ayverdilogo.png" alt="AyverdiMUN Logo">
+    <span>AyverdiMUN'26</span>
+  </div>
+  <div class="hamburger" onclick="toggleMenu()"><div></div><div></div><div></div></div>
+  <nav id="navbar">
+    <a href="index.html">Home</a>
+    <a href="ourteam.html">Our Team</a>
+    <a href="committees.html">Committees</a>
+    <a href="apply.html">Apply Now</a>
+  </nav>
+</header>
+
+<h1 class="page-title">Committees</h1>
+
+<div class="committee-container">
+  <div class="committee-box" style="background:url('committees/SOCHUM.jpg') center/cover no-repeat;" onclick="openOverlay('sochum')"><span>GA:3 SOCHUM</span></div>
+  <div class="committee-box" style="background:url('committees/LEGAL.jpg') center/cover no-repeat;" onclick="openOverlay('legal')"><span>GA:6 LEGAL</span></div>
+  <div class="committee-box" style="background:url('committees/UNODC.jpg') center/cover no-repeat;" onclick="openOverlay('unodc')"><span>UNODC</span></div>
+  <div class="committee-box" style="background:url('committees/UNSCEI.jpg') center/cover no-repeat;" onclick="openOverlay('unscei')"><span>UNSCEI</span></div>
+  <div class="committee-box" style="background:url('committees/IMF.jpg') center/cover no-repeat;" onclick="openOverlay('imf')"><span>IMF</span></div>
+  <div class="committee-box" style="background:url('committees/COMMON.jpg') center/cover no-repeat;" onclick="openOverlay('common')"><span>Commonwealth of Nations</span></div>
+  <div class="committee-box" style="background:url('committees/SKYBORN.jpg') center/cover no-repeat;" onclick="openOverlay('sky')"><span>Skyborn Protocol</span></div>
+  <div class="committee-box" style="background:url('committees/HCC.jpg') center/cover no-repeat;" onclick="openOverlay('hcc')"><span>HCC</span></div>
+  <div class="committee-box" style="background:url('committees/JCC.jpg') center/cover no-repeat;" onclick="openOverlay('fjcc')"><span>F:JCC</span></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-content">
+    <span class="close-btn" onclick="closeOverlay()">×</span>
+    <h2 id="overlay-title">Committee Title</h2>
+    <h3 id="overlay-subtitle">Agenda Item</h3>
+    <p id="overlay-desc">Full description goes here...</p>
+    <h4 id="overlay-usg">Under Secretary General</h4>
+    <h4 id="overlay-acas">Academic Assistant</h4>
+    <button id="sg-btn" onclick="window.location.href='comingsoon.html'">Study Guide</button>
+    <button id="rop-btn" style="display:none;" onclick="window.location.href='comingsoon.html'">Rules of Procedure</button>
+  </div>
+</div>
+
+<footer id="footer">
+  <div class="footer-container">
+    <div>
+      <h3>Quick Links</h3>
+      <a href="index.html">Home</a>
+      <a href="ourteam.html">Our Team</a>
+      <a href="committees.html">Committees</a>
+      <a href="apply.html">Apply Now</a>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <p>Email: <a href="mailto:ayverdimun@gmail.com">ayverdimun@gmail.com</a></p>
+      <p>Instagram: <a href="https://instagram.com/ayverdimun" target="_blank">@ayverdimun</a></p>
+    </div>
+  </div>
+  <p class="copy">AyverdiMUN'26 © 2025. All Rights Reserved.</p>
+</footer>
+
+<script>
+  const footer = document.getElementById('footer');
+  function revealFooter() {
+    const rect = footer.getBoundingClientRect();
+    if(rect.top < window.innerHeight - 50) {
+      footer.classList.add('visible');
+      window.removeEventListener('scroll', revealFooter);
+    }
+  }
+  window.addEventListener('scroll', revealFooter);
+  revealFooter();
+  
+function toggleMenu() {
+  const navbar = document.getElementById('navbar');
+  const hamburger = document.querySelector('.hamburger');
+  navbar.classList.toggle('show');
+  hamburger.classList.toggle('active');
+}
+function openOverlay(committee){
+  const overlay = document.getElementById('overlay');
+  overlay.style.display='flex';
+  
+  const title = document.getElementById('overlay-title');
+  const subtitle = document.getElementById('overlay-subtitle');
+  const desc = document.getElementById('overlay-desc');
+  const usg = document.getElementById('overlay-usg');
+  const acas = document.getElementById('overlay-acas');
+  const sgBtn = document.getElementById('sg-btn');
+  const ropBtn = document.getElementById('rop-btn');
+
+  if(committee==='sochum'){
+    title.innerText='GA:3 SOCHUM';
+    subtitle.innerText='The Right to Privacy in the Digital Age';
+    desc.innerText="PLACEHOLDER SOCHUM DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Duru Demirkıran'
+    acas.innerText='Academic Assistant: Eylül Güzel'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='legal'){
+    title.innerText='GA:6 LEGAL';
+    subtitle.innerText='Balancing National Soverneignty and Human Rights in Regulating Civilian Firearms';
+    desc.innerText="PLACEHOLDER LEGAL DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Atahan Gider'
+    acas.innerText='Academic Assistant: Mehmet Eren Koç'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='unodc'){
+    title.innerText='UNODC';
+    subtitle.innerText='The Effects of International Document Fraud';
+    desc.innerText="PLACEHOLDER UNODC DESCRIPTION TEXT BLABLA";
+    usg.innerText='Co-Under Secretary General: Yağmur Raife Apaydın'
+    acas.innerText='Co-Under Secretary General: Beyzanur Özsığınan'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='unscei'){
+    title.innerText='UNSCEI';
+    subtitle.innerText='Sokovia Accords';
+    desc.innerText="PLACEHOLDER UNSCEI DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Kerim Yağız Tut'
+    acas.innerText='Academic Assistant: Diyar Yaren Yıldırım'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='imf'){
+    title.innerText='IMF';
+    subtitle.innerText='Sokovia Accords';
+    desc.innerText="PLACEHOLDER IMF DESCRIPTION TEXT BLABLA";
+    usg.innerText='Co-Under Secretary General: Haktan Efe Özgür'
+    acas.innerText='Co-Under Secretary General: Narin Seren Kasım'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='common'){
+    title.innerText='Commonwealth of Nations';
+    subtitle.innerText='Agenda Yazmıyo Open Agenda Herhalde????';
+    desc.innerText="PLACEHOLDER COMMONWEALTH DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Hüseyin Efe Akpınar'
+    acas.innerText='Academic Assistant: Ege İşeri'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='sky'){
+    title.innerText='Skyborn Protocol';
+    subtitle.innerText='Bundada Agenda yok herhalde open agenda';
+    desc.innerText="PLACEHOLDER SKYBORN DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Yavuz Selim Şahin'
+    acas.innerText='Academic Assistant: Tarık Yıldırım'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='hcc'){
+    title.innerText='HCC';
+    subtitle.innerText='The Black Death';
+    desc.innerText="PLACEHOLDER HCC DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Postu yok bilmiyom'
+    acas.innerText='Academic Assistant: bunu da bilmiyom'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  } else if(committee==='fjcc'){
+    title.innerText='F:JCC';
+    subtitle.innerText='2028 US Elections';
+    desc.innerText="PLACEHOLDER HCC DESCRIPTION TEXT BLABLA";
+    usg.innerText='Under Secretary General: Postu yok bilmiyom'
+    acas.innerText='Academic Assistant: bunu da bilmiyom'
+    ropBtn.style.display='none';
+    sgBtn.onclick = () => { window.location.href = 'comingsoon.html'; };
+  }
+
+  setTimeout(()=>{ overlay.classList.add('show'); }, 10);
+}
+function closeOverlay() {
+  const overlay = document.getElementById('overlay');
+  overlay.classList.remove('show');
+  setTimeout(()=>overlay.style.display='none',400);
+}
+
+</script>
+
+</body>
+</html>
